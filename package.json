@@ -1,0 +1,11 @@
+{
+  "name": "nativescript-simplecam",
+  "version": "1.0.0",
+  "main": "nativescript-simplecam",
+  "nativescript": {
+    "platforms": {
+      "android": "3.0.0",
+      "ios": "3.0.0"
+    }
+  }
+}
