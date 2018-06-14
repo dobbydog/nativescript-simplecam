@@ -1,10 +1,9 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-const typesModule = require("utils/types");
-const utilsModule = require("utils/utils");
-const applicationModule = require("application/application");
-const imageSourceModule = require("image-source/image-source");
-const imageAssetModule = require("image-asset/image-asset");
+const types = require("utils/types");
+const utils = require("utils/utils");
+const application = require("application/application");
+const imageAsset = require("image-asset/image-asset");
 const trace = require("trace/trace");
 const platform = require("platform/platform");
 const permissions = require("nativescript-permissions");
@@ -16,16 +15,13 @@ exports.takePicture = function (options) {
   return new Promise(function(resolve, reject) {
     try {
       if (android.support.v4.content.ContextCompat.checkSelfPermission(
-        applicationModule.android.currentContext,
+        application.android.currentContext,
         android.Manifest.permission.CAMERA) !== android.content.pm.PackageManager.PERMISSION_GRANTED) {
 
         reject(new Error("Application does not have permissions to use Camera"));
 
         return;
       }
-
-      let types = require("utils/types");
-      let utils = require("utils/utils");
 
       let saveToGallery = true;
       let reqWidth = 0;
@@ -41,7 +37,7 @@ exports.takePicture = function (options) {
       }
 
       if (android.support.v4.content.ContextCompat.checkSelfPermission(
-        applicationModule.android.currentContext,
+        application.android.currentContext,
         android.Manifest.permission.WRITE_EXTERNAL_STORAGE) !== android.content.pm.PackageManager.PERMISSION_GRANTED) {
 
         saveToGallery = false;
@@ -67,8 +63,8 @@ exports.takePicture = function (options) {
       let sdkVersionInt = parseInt(platform.device.sdkVersion);
       if (sdkVersionInt >= 21) {
         tempPictureUri = android.support.v4.content.FileProvider.getUriForFile(
-          applicationModule.android.currentContext,
-          applicationModule.android.nativeApp.getPackageName() + ".provider", nativeFile);
+          application.android.currentContext,
+          application.android.nativeApp.getPackageName() + ".provider", nativeFile);
       }
       else {
         tempPictureUri = android.net.Uri.fromFile(nativeFile);
@@ -86,12 +82,10 @@ exports.takePicture = function (options) {
 
       if (takePictureIntent.resolveActivity(utils.ad.getApplicationContext().getPackageManager()) != null) {
 
-        let appModule = require("application");
-
         // Remove previous listeners if any
-        appModule.android.off("activityResult");
+        application.android.off("activityResult");
 
-        appModule.android.on("activityResult", (args) => {
+        application.android.on("activityResult", (args) => {
           const requestCode = args.requestCode;
           const resultCode = args.resultCode;
 
@@ -106,7 +100,7 @@ exports.takePicture = function (options) {
                   }
                 });
 
-                android.media.MediaScannerConnection.scanFile(appModule.android.context, [picturePath], null, callback);
+                android.media.MediaScannerConnection.scanFile(application.android.context, [picturePath], null, callback);
               } catch (ex) {
                 if (trace.isEnabled()) {
                   trace.write(`An error occurred while scanning file ${picturePath}: ${ex.message}!`,
@@ -127,7 +121,7 @@ exports.takePicture = function (options) {
               rotateBitmap(picturePath, 270);
             }
 
-            let asset = new imageAssetModule.ImageAsset(picturePath);
+            let asset = new imageAsset.ImageAsset(picturePath);
             asset.options = {
               width: reqWidth,
               height: reqHeight,
@@ -140,7 +134,7 @@ exports.takePicture = function (options) {
           }
         });
 
-        appModule.android.foregroundActivity.startActivityForResult(takePictureIntent, REQUEST_IMAGE_CAPTURE);
+        application.android.foregroundActivity.startActivityForResult(takePictureIntent, REQUEST_IMAGE_CAPTURE);
 
       }
     } catch (e) {
@@ -152,15 +146,13 @@ exports.takePicture = function (options) {
 };
 
 exports.isAvailable = function () {
-  let utils = require("utils/utils");
-
   return utils.ad
     .getApplicationContext()
     .getPackageManager()
     .hasSystemFeature(android.content.pm.PackageManager.FEATURE_CAMERA);
 };
 
-export let requestPermissions = function () {
+exports.requestPermissions = function () {
   return permissions.requestPermissions([
     android.Manifest.permission.WRITE_EXTERNAL_STORAGE,
     android.Manifest.permission.CAMERA
