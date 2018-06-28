@@ -1,4 +1,4 @@
-import imageAsset = require("image-asset");
+import * as imageAsset from "tns-core-modules/image-asset";
 
 /**
  * Take a photo using the camera.

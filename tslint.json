@@ -1,0 +1,16 @@
+{
+    "defaultSeverity": "error",
+    "jsRules": {},
+    "rules": {
+        "no-var-keyword": true,
+        "prefer-const": true,
+        "typedef": true,
+        "no-inferrable-types": true,
+        "semicolon": true,
+        "trailing-comma": [true, {
+            "multiline": "always",
+            "singleline": "never"
+        }]
+    },
+    "rulesDirectory": []
+}
