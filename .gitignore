@@ -1,1 +1,3 @@
 node_modules/
+/nativescript-simplecam.*.js.map
+/nativescript-simplecam.*.js
