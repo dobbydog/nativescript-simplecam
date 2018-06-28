@@ -10,5 +10,16 @@
   },
   "dependencies": {
     "nativescript-permissions": "^1.2.3"
+  },
+  "peerDependencies": {
+    "tns-core-modules": "^4.1.0"
+  },
+  "devDependencies": {
+    "tns-core-modules": "^4.1.0",
+    "tns-platform-declarations": "^4.1.0",
+    "typescript": "~2.7.2"
+  },
+  "scripts": {
+    "build": "npm i && tsc"
   }
 }
