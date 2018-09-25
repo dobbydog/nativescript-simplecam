@@ -2,6 +2,10 @@
   "name": "nativescript-simplecam",
   "version": "0.2.3",
   "main": "nativescript-simplecam",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/dobbydog/nativescript-simplecam.git"
+  },
   "nativescript": {
     "platforms": {
       "android": "3.0.0",
