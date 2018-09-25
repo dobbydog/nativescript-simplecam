@@ -1,4 +1,4 @@
 framework module SimpleCam {
-    header "SimpleCam-Swift.h"
-    requires objc
+  header "SimpleCam-Swift.h"
+  requires objc
 }
