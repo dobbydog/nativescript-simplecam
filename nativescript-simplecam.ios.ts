@@ -1,4 +1,3 @@
-/// <reference path="./node_modules/tns-platform-declarations/ios.d.ts" />
 import * as types from "tns-core-modules/utils/types";
 import { ImageAsset } from "tns-core-modules/image-asset";
 import * as imageSource from "tns-core-modules/image-source";
