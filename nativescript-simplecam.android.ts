@@ -26,40 +26,23 @@ export let takePicture = function (options?): Promise<any> {
       let types: typeof typesModule = require("tns-core-modules/utils/types");
       let utils: typeof utilsModule = require("tns-core-modules/utils/utils");
 
-      let saveToGallery = true;
       let reqWidth = 0;
       let reqHeight = 0;
       let shouldKeepAspectRatio = true;
 
       let density = utils.layout.getDisplayDensity();
       if (options) {
-        saveToGallery = types.isNullOrUndefined(options.saveToGallery) ? saveToGallery : options.saveToGallery;
         reqWidth = options.width ? options.width * density : reqWidth;
         reqHeight = options.height ? options.height * density : reqWidth;
         shouldKeepAspectRatio = types.isNullOrUndefined(options.keepAspectRatio) ? shouldKeepAspectRatio : options.keepAspectRatio;
       }
 
-      if (!permissions.hasPermission(android.Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
-
-        saveToGallery = false;
-      }
-
       let takePictureIntent = new android.content.Intent(android.provider.MediaStore.ACTION_IMAGE_CAPTURE);
       let dateStamp = createDateTimeStamp();
 
-      let picturePath: string;
-      let nativeFile;
+      let picturePath = utils.ad.getApplicationContext().getExternalFilesDir(null).getAbsolutePath() + "/" + "NSIMG_" + dateStamp + ".jpg";
+      let nativeFile = new java.io.File(picturePath);
       let tempPictureUri;
-
-      if (saveToGallery) {
-        picturePath = android.os.Environment.getExternalStoragePublicDirectory(
-          android.os.Environment.DIRECTORY_DCIM).getAbsolutePath() + "/Camera/" + "NSIMG_" + dateStamp + ".jpg";
-
-        nativeFile = new java.io.File(picturePath);
-      } else {
-        picturePath = utils.ad.getApplicationContext().getExternalFilesDir(null).getAbsolutePath() + "/" + "NSIMG_" + dateStamp + ".jpg";
-        nativeFile = new java.io.File(picturePath);
-      }
 
       let sdkVersionInt = parseInt(platform.device.sdkVersion);
       if (sdkVersionInt >= 21) {
@@ -92,25 +75,6 @@ export let takePicture = function (options?): Promise<any> {
           const resultCode = args.resultCode;
 
           if (requestCode === REQUEST_IMAGE_CAPTURE && resultCode === android.app.Activity.RESULT_OK) {
-            if (saveToGallery) {
-              try {
-                let callback = new android.media.MediaScannerConnection.OnScanCompletedListener({
-                  onScanCompleted: function (path, uri) {
-                    if (trace.isEnabled()) {
-                      trace.write(`image from path ${path} has been successfully scanned!`, trace.categories.Debug);
-                    }
-                  }
-                });
-
-                android.media.MediaScannerConnection.scanFile(appModule.android.context, [picturePath], null, callback);
-              } catch (ex) {
-                if (trace.isEnabled()) {
-                  trace.write(`An error occurred while scanning file ${picturePath}: ${ex.message}!`,
-                    trace.categories.Debug);
-                }
-              }
-            }
-
             let exif = new android.media.ExifInterface(picturePath);
             let orientation = exif.getAttributeInt(android.media.ExifInterface.TAG_ORIENTATION,
               android.media.ExifInterface.ORIENTATION_NORMAL);
@@ -169,19 +133,6 @@ export let isAvailable = function () {
 };
 
 export let requestPermissions = function () {
-  return permissions.requestPermissions([
-    android.Manifest.permission.WRITE_EXTERNAL_STORAGE,
-    android.Manifest.permission.CAMERA
-  ]);
-};
-
-export let requestPhotosPermissions = function () {
-  return permissions.requestPermissions([
-    android.Manifest.permission.WRITE_EXTERNAL_STORAGE,
-  ]);
-};
-
-export let requestCameraPermissions = function () {
   return permissions.requestPermissions([
     android.Manifest.permission.CAMERA
   ]);
